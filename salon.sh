@@ -1,4 +1,5 @@
 #!/bin/bash
+#!/bin/bash
 
 PSQL="psql -X --username=freecodecamp --dbname=salon --no-align --tuples-only -c"
 
@@ -44,7 +45,6 @@ MAIN_MENU() {
       # Check if phone number exists already
       CUSTOMER_LIST=$($PSQL "SELECT * FROM customers WHERE phone = '$CUSTOMER_PHONE'")
 
-
       if [[ -z $CUSTOMER_LIST ]]; then
         
         # Ask for user name
@@ -58,21 +58,25 @@ MAIN_MENU() {
         # Add new customer to the list
         NEW_CUSTOMER=$($PSQL "INSERT INTO customers(name,phone) VALUES('$CUSTOMER_NAME', '$CUSTOMER_PHONE')")
 
+        #### 5)  You can create a row in the appointments table by running your script and entering 1, 555-555-5555, Fabio, 10:30 at each request for input if that phone number isn’t in the customers table.
+        #### The row should have the customer_id for that customer, and the service_id for the service entered.
+
+        #### 6)  You can create another row in the appointments table by running your script and entering 2, 555-555-5555, 11am at each request for input if that phone number
+        #### is already in the customers table. The row should have the customer_id for that customer, and the service_id for the service entered.
+
+        CUSTOMER_ID=$($PSQL "SELECT customer_id FROM customers WHERE phone = '$CUSTOMER_PHONE'")
+        NEW_APPOINTMENT=$($PSQL "INSERT INTO appointments(customer_id, service_id, time) VALUES('$CUSTOMER_ID', '$SERVICE_ID_SELECTED', '$SERVICE_TIME')")
+
         #### 7)  After an appointment is successfully added, you should output the message I have put you down for a <service> at <time>, <name>.
         #### For example, if the user chooses cut as the service, 10:30 is entered for the time, and their name is Fabio in the database the output would be I have put
         #### you down for a cut at 10:30, Fabio. Make sure your script finishes running after completing any of the tasks above, or else the tests won't pass
         
         SELECTED_SERVICE=$($PSQL "SELECT name FROM services WHERE service_id = '$SERVICE_ID_SELECTED'")
         echo -e "\nI have put you down for a $SELECTED_SERVICE at $SERVICE_TIME, $CUSTOMER_NAME."
+        
+        EXIT
       fi      
   fi
 }
 
 MAIN_MENU
-
-
-#### 5)  You can create a row in the appointments table by running your script and entering 1, 555-555-5555, Fabio, 10:30 at each request for input if that phone number isn’t in the customers table.
-#### The row should have the customer_id for that customer, and the service_id for the service entered
-
-#### 6)  You can create another row in the appointments table by running your script and entering 2, 555-555-5555, 11am at each request for input if that phone number
-#### is already in the customers table. The row should have the customer_id for that customer, and the service_id for the service entered
