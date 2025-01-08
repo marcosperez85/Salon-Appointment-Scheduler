@@ -23,35 +23,50 @@ MAIN_MENU() {
     echo "$SERVICE_ID) $SERVICE_NAME"
   done
 
-  #### 2) If you pick a service that doesn't exist, you should be shown the same list of services again
-
   SERVICES_QTY=$($PSQL "SELECT COUNT(service_id) FROM services")
   read SERVICE_ID_SELECTED
 
   if [[ ! $SERVICE_ID_SELECTED =~ ^[1-9]+$ || $SERVICE_ID_SELECTED > $SERVICES_QTY ]]; then
+    
+    #### 2) If you pick a service that doesn't exist, you should be shown the same list of services again
     MAIN_MENU "That is not a valid service"
     else
-      EXIT
+      #### 3) Your script should prompt users to enter a service_id, phone number, a name if they aren’t already a customer, and a time.
+      #### You should use read to read these inputs into variables named SERVICE_ID_SELECTED, CUSTOMER_PHONE, CUSTOMER_NAME, and SERVICE_TIME
+      
+      # Ask for phone number
+      echo -e "\nGreat, please enter your phone number."
+      read CUSTOMER_PHONE
+
+      # Check if phone number exists already
+      CUSTOMER_LIST=$($PSQL "SELECT * FROM customers WHERE phone = '$CUSTOMER_PHONE'")
+
+      if [[ -z $CUSTOMER_LIST ]]; then
+        
+        # Ask for user name
+        echo -e "\nIt looks like this is your first time here. Please enter your name."
+        read CUSTOMER_NAME
+
+        # Ask for desired service time
+        echo -e "\nWhen would you like to have your service?."        
+        read SERVICE_TIME
+
+        # Add new customer to the list
+        NEW_CUSTOMER=$($PSQL "INSERT INTO customers(name,phone) VALUES('$CUSTOMER_NAME', '$CUSTOMER_PHONE')")
+      fi      
   fi
 }
 
-#CUSTOMER_PHONE
-#CUSTOMER_NAME
-#SERVICE_TIME
-
 MAIN_MENU
 
-#### 3) Your script should prompt users to enter a service_id, phone number, a name if they aren’t already a customer, and a time.
-#### 4)  You should use read to read these inputs into variables named SERVICE_ID_SELECTED, CUSTOMER_PHONE, CUSTOMER_NAME, and SERVICE_TIME
+#### 4)  If a phone number entered doesn’t exist, you should get the customers name and enter it, and the phone number, into the customers table
 
-#### 5)  If a phone number entered doesn’t exist, you should get the customers name and enter it, and the phone number, into the customers table
-
-#### 6)  You can create a row in the appointments table by running your script and entering 1, 555-555-5555, Fabio, 10:30 at each request for input if that phone number isn’t in the customers table.
+#### 5)  You can create a row in the appointments table by running your script and entering 1, 555-555-5555, Fabio, 10:30 at each request for input if that phone number isn’t in the customers table.
 #### The row should have the customer_id for that customer, and the service_id for the service entered
 
-#### 7)  You can create another row in the appointments table by running your script and entering 2, 555-555-5555, 11am at each request for input if that phone number
+#### 6)  You can create another row in the appointments table by running your script and entering 2, 555-555-5555, 11am at each request for input if that phone number
 #### is already in the customers table. The row should have the customer_id for that customer, and the service_id for the service entered
 
-#### 8)  After an appointment is successfully added, you should output the message I have put you down for a <service> at <time>, <name>.
+#### 7)  After an appointment is successfully added, you should output the message I have put you down for a <service> at <time>, <name>.
 #### For example, if the user chooses cut as the service, 10:30 is entered for the time, and their name is Fabio in the database the output would be I have put
 #### you down for a cut at 10:30, Fabio. Make sure your script finishes running after completing any of the tasks above, or else the tests won't pass
