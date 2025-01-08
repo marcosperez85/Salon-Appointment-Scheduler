@@ -38,8 +38,12 @@ MAIN_MENU() {
       echo -e "\nGreat, please enter your phone number."
       read CUSTOMER_PHONE
 
+      #### 4)  If a phone number entered doesn’t exist, you should get the customers name and enter it, and the phone number
+      #### into the customers table
+
       # Check if phone number exists already
       CUSTOMER_LIST=$($PSQL "SELECT * FROM customers WHERE phone = '$CUSTOMER_PHONE'")
+
 
       if [[ -z $CUSTOMER_LIST ]]; then
         
@@ -50,7 +54,7 @@ MAIN_MENU() {
         # Ask for desired service time
         echo -e "\nWhen would you like to have your service?."        
         read SERVICE_TIME
-
+        
         # Add new customer to the list
         NEW_CUSTOMER=$($PSQL "INSERT INTO customers(name,phone) VALUES('$CUSTOMER_NAME', '$CUSTOMER_PHONE')")
       fi      
@@ -59,7 +63,6 @@ MAIN_MENU() {
 
 MAIN_MENU
 
-#### 4)  If a phone number entered doesn’t exist, you should get the customers name and enter it, and the phone number, into the customers table
 
 #### 5)  You can create a row in the appointments table by running your script and entering 1, 555-555-5555, Fabio, 10:30 at each request for input if that phone number isn’t in the customers table.
 #### The row should have the customer_id for that customer, and the service_id for the service entered
